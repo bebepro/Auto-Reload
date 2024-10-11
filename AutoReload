@@ -1,0 +1,26 @@
+-- Continuous Auto Reload Script for Da Hood
+
+-- Function to check ammo and reload
+local function checkAmmoAndReload()
+    -- Use pcall to handle any potential errors gracefully
+    pcall(function()
+        local player = game:GetService("Players").LocalPlayer
+        local character = player.Character
+        if character then
+            -- Find the equipped tool (gun) and check its ammo
+            local tool = character:FindFirstChildWhichIsA("Tool")
+            if tool then
+                local ammo = tool:FindFirstChild("Ammo")
+                if ammo and ammo.Value <= 0 then  -- Check if ammo is 0 or less
+                    -- Reload the gun
+                    game:GetService("ReplicatedStorage").MainEvent:FireServer("Reload", tool)
+                end
+            end
+        end
+    end)
+end
+
+-- Continuous loop to check ammo every second
+while wait(0.1) do  -- Adjust the wait time as needed
+    checkAmmoAndReload()  -- Call the function to check ammo and reload
+end
