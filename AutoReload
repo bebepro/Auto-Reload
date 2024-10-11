@@ -1,26 +1,31 @@
--- Continuous Auto Reload Script for Da Hood
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 
--- Function to check ammo and reload
+local player = Players.LocalPlayer
+local lastReloadTime = 0 -- Track the last reload time
+local reloadCooldown = 1 -- Time in seconds to prevent spamming reloads
+
+-- Function to check ammo and reload if necessary
 local function checkAmmoAndReload()
-    -- Use pcall to handle any potential errors gracefully
-    pcall(function()
-        local player = game:GetService("Players").LocalPlayer
-        local character = player.Character
-        if character then
-            -- Find the equipped tool (gun) and check its ammo
-            local tool = character:FindFirstChildWhichIsA("Tool")
-            if tool then
-                local ammo = tool:FindFirstChild("Ammo")
-                if ammo and ammo.Value <= 0 then  -- Check if ammo is 0 or less
+    local character = player.Character
+    if character then
+        local tool = character:FindFirstChildWhichIsA("Tool")
+        if tool then
+            local ammo = tool:FindFirstChild("Ammo")
+            if ammo and ammo.Value <= 0 then -- Check if ammo is 0 or less
+                local currentTime = tick()
+                if currentTime - lastReloadTime >= reloadCooldown then
                     -- Reload the gun
-                    game:GetService("ReplicatedStorage").MainEvent:FireServer("Reload", tool)
+                    ReplicatedStorage.MainEvent:FireServer("Reload", tool)
+                    lastReloadTime = currentTime -- Update the last reload time
                 end
             end
         end
-    end)
+    end
 end
 
--- Continuous loop to check ammo every second
-while wait(0.1) do  -- Adjust the wait time as needed
-    checkAmmoAndReload()  -- Call the function to check ammo and reload
-end
+-- Connect to Heartbeat for more efficient execution
+RunService.Heartbeat:Connect(function()
+    checkAmmoAndReload() -- Call the function to check ammo and reload
+end)
