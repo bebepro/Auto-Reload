@@ -4,7 +4,7 @@ local RunService = game:GetService("RunService")
 
 local player = Players.LocalPlayer
 local lastReloadTime = 0 -- Track the last reload time
-local reloadCooldown = 0.5 -- Time in seconds to prevent spamming reloads
+local reloadCooldown = 0.3 -- Time in seconds to prevent spamming reloads
 
 -- Function to check ammo and reload if necessary
 local function checkAmmoAndReload()
